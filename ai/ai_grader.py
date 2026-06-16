@@ -1,61 +1,37 @@
 from openai import OpenAI
-from dotenv import load_dotenv
-
 import os
-import json
-
-load_dotenv()
 
 client = OpenAI(
-    api_key=os.getenv(
-        "OPENAI_API_KEY"
-    )
+    api_key=os.getenv("OPENAI_API_KEY")
 )
-
 
 def grade_answer(
         question,
-        correct_answer,
+        expected_answer,
         user_answer
 ):
 
     prompt = f"""
-You are an expert evaluator.
+    Question:
+    {question}
 
-Question:
-{question}
+    Expected Answer:
+    {expected_answer}
 
-Correct Answer:
-{correct_answer}
+    User Answer:
+    {user_answer}
 
-User Answer:
-{user_answer}
-
-Return JSON:
-
-{{
-"score": 0-100,
-"feedback": "short explanation"
-}}
-"""
+    Give score only from 0 to 100.
+    """
 
     response = client.responses.create(
-        model="gpt-4.1-mini",
+        model="gpt-5",
         input=prompt
     )
 
-    text = response.output_text
-
     try:
-
-        result = json.loads(text)
-
-        return result
-
+        return int(
+            response.output_text.strip()
+        )
     except:
-
-        return {
-            "score": 0,
-            "feedback":
-            "Unable to evaluate"
-        }
+        return 0

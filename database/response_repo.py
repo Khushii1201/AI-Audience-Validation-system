@@ -8,6 +8,15 @@ def save_response(
         score
 ):
 
+    print(
+        "Saving:",
+        session_id,
+        question_id,
+        user_name,
+        answer,
+        score
+    )
+
     conn = get_connection()
 
     cursor = conn.cursor()
@@ -33,4 +42,7 @@ def save_response(
     )
 
     conn.commit()
+
+    print("Inserted row")
+
     conn.close()

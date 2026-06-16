@@ -3,7 +3,7 @@ import streamlit as st
 from database.db import get_connection
 
 st.title(
-    "Weak Areas Analysis"
+    "Question Analytics"
 )
 
 conn = get_connection()
@@ -26,14 +26,14 @@ conn.close()
 
 for question, avg_score in results:
 
-    if avg_score < 50:
+    st.write(
+        f"{question}"
+    )
 
-        st.error(
-            f"Weak Area: {question}"
-        )
+    st.progress(
+        int(avg_score)
+    )
 
-    else:
-
-        st.success(
-            f"Strong Area: {question}"
-        )
+    st.write(
+        f"Average Score: {avg_score}"
+    )
