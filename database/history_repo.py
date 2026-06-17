@@ -9,14 +9,19 @@ def get_all_sessions():
 
     cursor.execute("""
     SELECT
-        session_id,
-        topic
-    FROM sessions
-    ORDER BY session_id DESC
+        s.session_id,
+        s.topic,
+        COUNT(DISTINCT r.user_name),
+        AVG(r.score)
+    FROM sessions s
+    LEFT JOIN responses r
+    ON s.session_id = r.session_id
+    GROUP BY s.session_id
+    ORDER BY s.session_id DESC
     """)
 
-    sessions = cursor.fetchall()
+    results = cursor.fetchall()
 
     conn.close()
 
-    return sessions
+    return results

@@ -1,11 +1,14 @@
-from google import genai
+from groq import Groq
 from dotenv import load_dotenv
+
 import os
+import random
 
 load_dotenv()
+print("USING GROQ QUESTION GENERATOR")
 
-client = genai.Client(
-    api_key=os.getenv("GOOGLE_API_KEY")
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY")
 )
 
 
@@ -13,33 +16,75 @@ def generate_questions(topic):
 
     try:
 
-        prompt = f"""
-        Generate exactly 5 interview-style questions and answers on the topic: {topic}
-
-        Return ONLY in this format:
-
-        Question: <question>
-        Answer: <answer>
-
-        Question: <question>
-        Answer: <answer>
-
-        Question: <question>
-        Answer: <answer>
-
-        Question: <question>
-        Answer: <answer>
-
-        Question: <question>
-        Answer: <answer>
-        """
-
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
+        seed = random.randint(
+            1,
+            100000
         )
 
-        text = response.text
+        prompt = f"""
+Topic: {topic}
+
+Generate EXACTLY 5 advanced assessment questions.
+
+STRICT RULES:
+
+DO NOT generate:
+
+- What is {topic}?
+- Define {topic}
+- Why is {topic} important?
+- List applications of {topic}
+
+Instead generate:
+
+1. Scenario-based questions
+2. Analytical questions
+3. Problem-solving questions
+4. Real-world application questions
+5. Comparison questions
+
+Assume the audience already knows the basics.
+
+Return ONLY:
+
+Question: ...
+Answer: ...
+
+Question: ...
+Answer: ...
+
+Question: ...
+Answer: ...
+
+Question: ...
+Answer: ...
+
+Question: ...
+Answer: ...
+"""
+        print("GENERATING:", topic)
+
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=1
+        )
+
+        text = (
+            response
+            .choices[0]
+            .message
+            .content
+        )
+
+        print("\n===== GROQ RESPONSE =====\n")
+        print(text)
+        print("\n=========================\n")
 
         questions = []
 
@@ -78,59 +123,61 @@ def generate_questions(topic):
 
                     current_question = None
 
-        if len(questions) > 0:
+        if len(questions) >= 5:
 
-            return questions
+            return questions[:5]
 
         raise Exception(
-            "No questions generated"
+            "Could not parse model response."
         )
 
     except Exception as e:
 
         print(
-            "Gemini Error:",
+            "QUESTION GENERATION ERROR:",
             e
         )
 
         return [
+
             {
                 "question":
-                f"What is {topic}?",
+                f"Explain a practical application of {topic}.",
 
                 "answer":
-                f"Definition of {topic}"
+                f"A real-world application of {topic}."
             },
 
             {
                 "question":
-                f"Why is {topic} important?",
+                f"What challenges are associated with {topic}?",
 
                 "answer":
-                f"Importance of {topic}"
+                f"Common limitations and challenges."
             },
 
             {
                 "question":
-                f"What are the applications of {topic}?",
+                f"How is {topic} used in industry?",
 
                 "answer":
-                f"Applications of {topic}"
+                f"Industrial use cases of {topic}."
             },
 
             {
                 "question":
-                f"What are the advantages of {topic}?",
+                f"Compare {topic} with a related concept.",
 
                 "answer":
-                f"Advantages of {topic}"
+                f"Major similarities and differences."
             },
 
             {
                 "question":
-                f"What are the challenges in {topic}?",
+                f"What factors influence the effectiveness of {topic}?",
 
                 "answer":
-                f"Challenges in {topic}"
+                f"Key influencing factors."
             }
+
         ]

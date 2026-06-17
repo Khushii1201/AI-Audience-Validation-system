@@ -2,10 +2,10 @@ from google import genai
 from dotenv import load_dotenv
 import os
 
-# Load environment variables
 load_dotenv()
 
-# Create Gemini client
+print("KEY FOUND:", os.getenv("GOOGLE_API_KEY") is not None)
+
 client = genai.Client(
     api_key=os.getenv("GOOGLE_API_KEY")
 )
@@ -14,26 +14,12 @@ try:
 
     response = client.models.generate_content(
         model="gemini-2.5-flash",
-        contents="""
-        Generate exactly 3 questions and answers on DBMS.
-
-        Format:
-
-        Question: <question>
-        Answer: <answer>
-
-        Question: <question>
-        Answer: <answer>
-
-        Question: <question>
-        Answer: <answer>
-        """
+        contents="Say hello"
     )
 
-    print("\n===== GEMINI RESPONSE =====\n")
     print(response.text)
 
 except Exception as e:
 
-    print("\n===== ERROR =====\n")
+    print("ERROR:")
     print(e)

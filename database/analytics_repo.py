@@ -4,34 +4,91 @@ from database.db import get_connection
 def get_total_responses():
 
     conn = get_connection()
+
     cursor = conn.cursor()
 
-    cursor.execute(
-        "SELECT COUNT(*) FROM responses"
-    )
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM responses
+    """)
 
-    result = cursor.fetchone()[0]
+    result = cursor.fetchone()
 
     conn.close()
 
-    return result
+    return result[0]
 
 
 def get_average_score():
 
     conn = get_connection()
+
     cursor = conn.cursor()
 
-    cursor.execute(
-        "SELECT AVG(score) FROM responses"
-    )
+    cursor.execute("""
+    SELECT AVG(score)
+    FROM responses
+    """)
 
-    result = cursor.fetchone()[0]
+    result = cursor.fetchone()
 
     conn.close()
 
-    return result if result else 0
-def get_leaderboard():
+    if result[0] is None:
+
+        return 0
+
+    return float(result[0])
+
+
+def get_highest_score():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT MAX(total_score)
+    FROM
+    (
+        SELECT
+            user_name,
+            SUM(score) as total_score
+        FROM responses
+        GROUP BY user_name
+    )
+    """)
+
+    result = cursor.fetchone()
+
+    conn.close()
+
+    if result[0] is None:
+
+        return 0
+
+    return result[0]
+
+
+def get_participant_count():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT COUNT(DISTINCT user_name)
+    FROM responses
+    """)
+
+    result = cursor.fetchone()
+
+    conn.close()
+
+    return result[0]
+
+
+def get_participant_scores():
 
     conn = get_connection()
 
@@ -51,43 +108,54 @@ def get_leaderboard():
     conn.close()
 
     return results
-def get_session_stats(session_id):
-
-    conn = get_connection()
-
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    SELECT
-        COUNT(*),
-        AVG(score)
-    FROM responses
-    WHERE session_id=?
-    """,(session_id,))
-
-    result = cursor.fetchone()
-
-    conn.close()
-
-    return result
 
 
-def get_participant_scores():
+def get_leaderboard():
 
-    conn = get_connection()
-    cursor = conn.cursor()
+    return get_participant_scores()
 
-    cursor.execute("""
-    SELECT
-        user_name,
-        SUM(score)
-    FROM responses
-    GROUP BY user_name
-    ORDER BY SUM(score) DESC
-    """)
 
-    results = cursor.fetchall()
+def get_performance_distribution():
 
-    conn.close()
+    participants = get_participant_scores()
 
-    return results
+    excellent = 0
+    good = 0
+    needs_help = 0
+
+    for _, score in participants:
+
+        if score >= 80:
+
+            excellent += 1
+
+        elif score >= 60:
+
+            good += 1
+
+        else:
+
+            needs_help += 1
+
+    return (
+        excellent,
+        good,
+        needs_help
+    )
+
+
+def get_session_summary():
+
+    return {
+        "responses":
+            get_total_responses(),
+
+        "participants":
+            get_participant_count(),
+
+        "average_score":
+            get_average_score(),
+
+        "highest_score":
+            get_highest_score()
+    }

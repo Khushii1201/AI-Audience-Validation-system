@@ -1,4 +1,7 @@
 import streamlit as st
+from utils.ui_styles import load_css
+
+load_css()
 
 from database.db import (
     create_tables,
@@ -20,29 +23,36 @@ from ai.groq_evaluator import (
 create_tables()
 
 st.set_page_config(
-    page_title="Audience Portal",
-    page_icon="🎯",
+    page_title="Join Session",
     layout="wide"
 )
 
-st.title("🎯 Audience Portal")
+st.title("Join Session")
 
-st.markdown(
-    """
-    Welcome! Join the session and answer the questions.
-    """
-)
 
-user_name = st.text_input(
-    "👤 Your Name"
-)
+st.divider()
 
-session_id = st.text_input(
-    "🔑 Session ID"
-)
+# -----------------------------
+# JOIN SESSION
+# -----------------------------
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    user_name = st.text_input(
+        "Enter Your Name"
+    )
+
+with col2:
+
+    session_id = st.text_input(
+        " Session ID"
+    )
 
 if st.button(
-    "Join Session"
+    " Join Session",
+    use_container_width=True
 ):
 
     if user_name.strip() == "":
@@ -61,7 +71,9 @@ if st.button(
 
         st.stop()
 
-    session_id = int(session_id)
+    session_id = int(
+        session_id
+    )
 
     conn = get_connection()
 
@@ -98,22 +110,34 @@ if st.button(
             "Successfully joined session."
         )
 
+# -----------------------------
+# DISPLAY QUESTIONS
+# -----------------------------
+
 if "questions" in st.session_state:
 
     st.divider()
-
-    st.subheader(
-        "📝 Questions"
-    )
-
-    answers = {}
-    question_map = {}
 
     total_questions = len(
         st.session_state.questions
     )
 
-    for index, (qid, question) in enumerate(
+    st.subheader(
+        " Questions:"
+    )
+
+    st.info(
+        f"Total Questions: {total_questions}"
+    )
+
+    answers = {}
+
+    question_map = {}
+
+    for index, (
+            qid,
+            question
+    ) in enumerate(
         st.session_state.questions,
         start=1
     ):
@@ -124,29 +148,39 @@ if "questions" in st.session_state:
             index / total_questions
         )
 
-        st.markdown(
-            f"### Question {index}"
-        )
+        with st.container(
+            border=True
+        ):
 
-        st.write(
-            question
-        )
+            st.markdown(
+                f"### Question {index} of {total_questions}"
+            )
 
-        answers[qid] = st.text_area(
-            "Your Answer",
-            key=f"answer_{qid}"
-        )
+            st.write(
+                question
+            )
+
+            answers[qid] = st.text_area(
+                "Your Answer",
+                key=f"answer_{qid}",
+                height=120
+            )
 
     st.divider()
 
+    # -----------------------------
+    # SUBMIT
+    # -----------------------------
+
     if st.button(
-        "✅ Submit Answers"
+        "Submit Assessment",
+        use_container_width=True
     ):
 
         total_score = 0
 
         st.subheader(
-            "📊 Evaluation Results"
+            "Evaluation Results"
         )
 
         for qid, answer in answers.items():
@@ -179,25 +213,42 @@ if "questions" in st.session_state:
                 border=True
             ):
 
-                st.write(
-                    f"Question ID: {qid}"
+                st.metric(
+                    "Question Score",
+                    f"{score}/20"
                 )
 
                 st.write(
-                    f"Score: {score}/20"
+                    f" Feedback: {feedback}"
                 )
 
-                st.write(
-                    f"Feedback: {feedback}"
-                )
-
-        st.success(
-            "🎉 Responses submitted successfully!"
-        )
+        st.divider()
 
         st.metric(
             "Final Score",
             f"{total_score}/100"
         )
 
+        if total_score >= 80:
+
+            st.success(
+                "Excellent understanding of the topic."
+            )
+
+        elif total_score >= 60:
+
+            st.warning(
+                "Good understanding. Some concepts need reinforcement."
+            )
+
+        else:
+
+            st.error(
+                "Learning gaps detected. Additional revision is recommended."
+            )
+
         st.balloons()
+
+        st.success(
+            "Assessment submitted successfully."
+        )
