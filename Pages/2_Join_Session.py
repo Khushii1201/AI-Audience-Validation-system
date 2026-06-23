@@ -16,7 +16,7 @@ from database.question_repo import (
     get_correct_answer
 )
 
-from ai.groq_evaluator import (
+from ai.ollama_evaluator import (
     evaluate_answer
 )
 

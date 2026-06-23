@@ -1,15 +1,5 @@
-from groq import Groq
-from dotenv import load_dotenv
-
-import os
+import ollama
 import random
-
-load_dotenv()
-print("USING GROQ QUESTION GENERATOR")
-
-client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
-)
 
 
 def generate_questions(topic):
@@ -22,69 +12,43 @@ def generate_questions(topic):
         )
 
         prompt = f"""
-Topic: {topic}
+        Random Seed: {seed}
 
-Generate EXACTLY 5 advanced assessment questions.
+        Topic: {topic}
 
-STRICT RULES:
+        Generate EXACTLY 5 advanced assessment questions.
 
-DO NOT generate:
+        Do NOT ask:
+        - What is {topic}
+        - Why is {topic} important
 
-- What is {topic}?
-- Define {topic}
-- Why is {topic} important?
-- List applications of {topic}
+        Include:
+        - Scenario based questions
+        - Analytical questions
+        - Application questions
 
-Instead generate:
+        Return ONLY:
 
-1. Scenario-based questions
-2. Analytical questions
-3. Problem-solving questions
-4. Real-world application questions
-5. Comparison questions
+        Question: ...
 
-Assume the audience already knows the basics.
+        Answer: ...
+        """
 
-Return ONLY:
-
-Question: ...
-Answer: ...
-
-Question: ...
-Answer: ...
-
-Question: ...
-Answer: ...
-
-Question: ...
-Answer: ...
-
-Question: ...
-Answer: ...
-"""
-        print("GENERATING:", topic)
-
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+        response = ollama.chat(
+            model="llama3.1:8b",
             messages=[
                 {
-                    "role": "user",
-                    "content": prompt
+                    "role":"user",
+                    "content":prompt
                 }
-            ],
-            temperature=1
+            ]
         )
 
         text = (
-            response
-            .choices[0]
-            .message
-            .content
+            response["message"]["content"]
         )
 
-        print("\n===== GROQ RESPONSE =====\n")
         print(text)
-        print("\n=========================\n")
 
         questions = []
 
@@ -116,68 +80,17 @@ Answer: ...
 
                     questions.append(
                         {
-                            "question": current_question,
-                            "answer": answer
+                            "question":current_question,
+                            "answer":answer
                         }
                     )
 
                     current_question = None
 
-        if len(questions) >= 5:
-
-            return questions[:5]
-
-        raise Exception(
-            "Could not parse model response."
-        )
+        return questions[:5]
 
     except Exception as e:
 
-        print(
-            "QUESTION GENERATION ERROR:",
-            e
-        )
+        print(e)
 
-        return [
-
-            {
-                "question":
-                f"Explain a practical application of {topic}.",
-
-                "answer":
-                f"A real-world application of {topic}."
-            },
-
-            {
-                "question":
-                f"What challenges are associated with {topic}?",
-
-                "answer":
-                f"Common limitations and challenges."
-            },
-
-            {
-                "question":
-                f"How is {topic} used in industry?",
-
-                "answer":
-                f"Industrial use cases of {topic}."
-            },
-
-            {
-                "question":
-                f"Compare {topic} with a related concept.",
-
-                "answer":
-                f"Major similarities and differences."
-            },
-
-            {
-                "question":
-                f"What factors influence the effectiveness of {topic}?",
-
-                "answer":
-                f"Key influencing factors."
-            }
-
-        ]
+        return []
