@@ -23,11 +23,10 @@ create_tables()
 
 st.set_page_config(
     page_title="Create Session",
-    page_icon="🧠",
     layout="wide"
 )
 
-st.title("🧠 Create AI Session")
+st.title(" Create AI Session")
 
 st.markdown("""
 Create AI-powered learning sessions with reusable question banks.
@@ -71,7 +70,7 @@ st.session_state.topic = topic
 # ----------------------------------------------------
 
 difficulty = st.radio(
-    "🎯 Difficulty",
+    " Difficulty",
     ["Easy", "Medium", "Hard"],
     horizontal=True,
     index=["Easy", "Medium", "Hard"].index(
@@ -86,7 +85,7 @@ st.session_state.difficulty = difficulty
 # ----------------------------------------------------
 
 question_source = st.radio(
-    "📖 Question Source",
+    "Question Source",
     [
         "AI",
         "Question Bank",
@@ -172,18 +171,16 @@ if len(st.session_state.bank_results) > 0:
 
 st.divider()
 
-# ----------------------------------------------------
-# AI Question Generation
-# ----------------------------------------------------
 
-st.subheader("🤖 Generate Questions")
+
+st.subheader(" Generate Questions")
 
 col1, col2 = st.columns(2)
 
 with col1:
 
     if st.button(
-        "✨ Generate Questions",
+        "Generate Questions",
         use_container_width=True
     ):
 
@@ -262,7 +259,7 @@ with col1:
 with col2:
 
     if st.button(
-        "🔄 Regenerate",
+        " Regenerate",
         use_container_width=True
     ):
 
@@ -333,7 +330,7 @@ if len(st.session_state.generated_questions) > 0:
 
     st.divider()
 
-    st.subheader("📝 Review Questions")
+    st.subheader(" Review Questions")
 
     st.info(
         "Review, edit or delete questions before publishing."
@@ -378,7 +375,7 @@ if len(st.session_state.generated_questions) > 0:
             with col2:
 
                 st.button(
-                    "🔄 Regenerate",
+                    " Regenerate",
                     key=f"regen_{i}",
                     disabled=True,
                     help="Coming soon"
@@ -403,10 +400,6 @@ if len(st.session_state.generated_questions) > 0:
         )
 
         st.rerun()
-
-# ----------------------------------------------------
-# Add Custom Question
-# ----------------------------------------------------
 
     st.divider()
 
@@ -503,14 +496,14 @@ if len(st.session_state.generated_questions) > 0:
 
     st.divider()
 
-    st.subheader("🚀 Publish Session")
+    st.subheader(" Publish Session")
 
     col1, col2 = st.columns(2)
 
     with col1:
 
         if st.button(
-            "🚀 Publish Session",
+            "Publish Session",
             use_container_width=True,
             type="primary"
         ):
@@ -604,7 +597,7 @@ if len(st.session_state.generated_questions) > 0:
                 st.divider()
 
                 st.subheader(
-                    "📤 Share With Audience"
+                    "Share With Audience"
                 )
 
                 st.code(
@@ -632,7 +625,7 @@ Participants can:
     with col2:
 
         if st.button(
-            "🧹 Clear Session",
+            " Clear Session",
             use_container_width=True
         ):
 

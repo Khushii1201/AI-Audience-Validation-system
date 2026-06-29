@@ -233,22 +233,24 @@ if "questions" in st.session_state:
                 )
 
         st.divider()
+        # Prevent score from exceeding limits
+total_score = max(0, min(total_score, 100))
 
-        percentage=(total_score/100)*100
+percentage = total_score
 
-        st.metric(
+st.metric(
+    "Final Score",
+    f"{total_score}/100"
+)
 
-            "Final Score",
-
-            f"{total_score}/100"
-
-        )
-
-        st.progress(
+st.progress(
+    percentage / 100
+)
+st.progress(
             percentage/100
         )
 
-        if percentage>=90:
+if percentage>=90:
 
             st.success(
                 "🏆 Outstanding Performance!"
