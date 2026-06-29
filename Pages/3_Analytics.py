@@ -1,268 +1,306 @@
 import streamlit as st
-from utils.ui_styles import load_css
-
-load_css()
 
 from database.analytics_repo import (
+
     get_total_responses,
+    get_total_participants,
     get_average_score,
-    get_participant_scores
-)
-from utils.export_excel import (
-    export_results
+    get_highest_score,
+    get_lowest_score,
+    get_leaderboard,
+    get_performance_distribution,
+    get_topic_statistics,
+    get_difficulty_statistics,
+    get_question_bank_usage
+
 )
 
 st.set_page_config(
+
     page_title="Analytics Dashboard",
+
+    page_icon="📊",
+
     layout="wide"
+
 )
 
-st.title(" Analytics Dashboard")
+st.title("📊 Analytics Dashboard")
 
-# ----------------------------------
-# Data
-# ----------------------------------
-
-participants = get_participant_scores()
-
-response_count = get_total_responses()
-
-average_score = get_average_score()
-
-highest_score = 0
-
-participant_count = len(participants)
-
-if participants:
-
-    highest_score = max(
-        score
-        for _, score in participants
-    )
-
-# ----------------------------------
-# KPI CARDS
-# ----------------------------------
-
-st.subheader(
-    "Session Overview"
+st.markdown(
+"""
+Monitor audience understanding and session performance.
+"""
 )
 
-col1, col2, col3, col4 = st.columns(4)
+# -------------------------------------------------------
+# KPI Cards
+# -------------------------------------------------------
 
-with col1:
+responses = get_total_responses()
 
-    st.metric(
-        "Responses",
-        response_count
-    )
+participants = get_total_participants()
 
-with col2:
+average = get_average_score()
 
-    st.metric(
-        "Participants",
-        participant_count
-    )
+highest = get_highest_score()
 
-with col3:
+lowest = get_lowest_score()
 
-    st.metric(
-        "Average Score",
-        f"{average_score:.1f}"
-    )
-
-with col4:
-
-    st.metric(
-        "Highest Score",
-        highest_score
-    )
-
-st.divider()
-
-# ----------------------------------
-# UNDERSTANDING LEVEL
-# ----------------------------------
-
-st.subheader(
-    "Audience Understanding: how well the audience grasped the topic"
-)
-
-if average_score >= 80:
-
-    st.success(
-        """
-        Excellent Understanding
-
-        Most participants have a strong grasp of the topic.
-        """
-    )
-
-elif average_score >= 60:
-
-    st.warning(
-        """
-        Moderate Understanding
-
-        Some concepts may require reinforcement.
-        """
-    )
-
-else:
-
-    st.error(
-        """
-        Learning Gaps Detected
-
-        Significant revision is recommended.
-        """
-    )
-
-st.divider()
-
-# ----------------------------------
-# TOP PERFORMERS
-# ----------------------------------
-
-st.subheader(
-    "🏆 Top Participants"
-)
-
-if len(participants) == 0:
-
-    st.info(
-        "No participant data available."
-    )
-
-else:
-
-    rank = 1
-
-    for user, score in participants:
-
-        if rank == 1:
-
-            medal = "🥇"
-
-        elif rank == 2:
-
-            medal = "🥈"
-
-        elif rank == 3:
-
-            medal = "🥉"
-
-        else:
-
-            medal = "🎯"
-
-        with st.container(border=True):
-
-            col1, col2 = st.columns(
-                [4,1]
-            )
-
-            with col1:
-
-                st.write(
-                    f"{medal} {user}"
-                )
-
-            with col2:
-
-                st.write(
-                    f"{score}"
-                )
-
-        rank += 1
-
-st.divider()
-
-# ----------------------------------
-# PERFORMANCE DISTRIBUTION
-# ----------------------------------
-
-st.subheader(
-    "📊 Performance Distribution"
-)
-
-excellent = 0
-good = 0
-needs_help = 0
-
-for _, score in participants:
-
-    if score >= 80:
-
-        excellent += 1
-
-    elif score >= 60:
-
-        good += 1
-
-    else:
-
-        needs_help += 1
-
-c1, c2, c3 = st.columns(3)
+c1,c2,c3,c4,c5 = st.columns(5)
 
 with c1:
 
-    st.success(
-        f"Excellent: {excellent}"
+    st.metric(
+        "Responses",
+        responses
     )
 
 with c2:
 
-    st.warning(
-        f"Good: {good}"
+    st.metric(
+        "Participants",
+        participants
     )
 
 with c3:
 
-    st.error(
-        f"Needs Help: {needs_help}"
+    st.metric(
+        "Average",
+        average
+    )
+
+with c4:
+
+    st.metric(
+        "Highest",
+        highest
+    )
+
+with c5:
+
+    st.metric(
+        "Lowest",
+        lowest
     )
 
 st.divider()
 
-# ----------------------------------
-# SESSION SUMMARY
-# ----------------------------------
+# -------------------------------------------------------
+# Leaderboard
+# -------------------------------------------------------
 
-st.subheader(
-    "📋 Session Summary"
-)
+st.subheader("🏆 Top Participants")
 
-st.info(
-    f"""
-    Total Participants: {participant_count}
+leaderboard = get_leaderboard()
 
-    Total Responses: {response_count}
-
-    Average Score: {average_score:.1f}
-
-    Highest Score: {highest_score}
-    """
-)
-st.divider()
-
-if st.button(
-    "📥 Export Results"
+for i,(user,score) in enumerate(
+    leaderboard[:5],
+    start=1
 ):
 
-    filename = (
-        export_results()
+    medal=""
+
+    if i==1:
+
+        medal="🥇"
+
+    elif i==2:
+
+        medal="🥈"
+
+    elif i==3:
+
+        medal="🥉"
+
+    else:
+
+        medal="🏅"
+
+    st.write(
+        f"{medal} {user} — {score}/100"
     )
 
-    with open(
-        filename,
-        "rb"
-    ) as file:
+st.divider()
 
-        st.download_button(
-            label="Download Excel File",
-            data=file,
-            file_name=filename,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+# -------------------------------------------------------
+# Performance Distribution
+# -------------------------------------------------------
+
+st.subheader("📈 Performance Distribution")
+
+distribution = get_performance_distribution()
+
+c1,c2,c3,c4 = st.columns(4)
+
+with c1:
+
+    st.metric(
+        "Excellent",
+        distribution["Excellent"]
+    )
+
+with c2:
+
+    st.metric(
+        "Good",
+        distribution["Good"]
+    )
+
+with c3:
+
+    st.metric(
+        "Average",
+        distribution["Average"]
+    )
+
+with c4:
+
+    st.metric(
+        "Needs Help",
+        distribution["Needs Help"]
+    )
+
+st.divider()
+
+# -------------------------------------------------------
+# Topic Analytics
+# -------------------------------------------------------
+
+st.subheader("📚 Topic Analytics")
+
+topics = get_topic_statistics()
+
+if len(topics)==0:
+
+    st.info(
+        "No topic analytics available."
+    )
+
+else:
+
+    for topic,avg,participants in topics:
+
+        with st.container(border=True):
+
+            st.markdown(
+                f"### {topic}"
+            )
+
+            c1,c2 = st.columns(2)
+
+            with c1:
+
+                st.metric(
+                    "Average Score",
+                    f"{avg:.2f}"
+                )
+
+            with c2:
+
+                st.metric(
+                    "Participants",
+                    participants
+                )
+
+st.divider()
+
+# -------------------------------------------------------
+# Difficulty Analytics
+# -------------------------------------------------------
+
+st.subheader("🎯 Difficulty Analytics")
+
+difficulty = get_difficulty_statistics()
+
+if len(difficulty)==0:
+
+    st.info(
+        "No difficulty statistics."
+    )
+
+else:
+
+    cols = st.columns(
+        len(difficulty)
+    )
+
+    for i,(level,avg) in enumerate(
+        difficulty
+    ):
+
+        with cols[i]:
+
+            st.metric(
+
+                level,
+
+                f"{avg:.2f}"
+
+            )
+
+st.divider()
+
+# -------------------------------------------------------
+# Question Bank Usage
+# -------------------------------------------------------
+
+st.subheader("📚 Most Reused Question Sets")
+
+usage = get_question_bank_usage()
+
+if len(usage)==0:
+
+    st.info(
+        "Question bank is empty."
+    )
+
+else:
+
+    for topic,difficulty,used in usage:
+
+        with st.container(border=True):
+
+            st.markdown(
+                f"### {topic}"
+            )
+
+            st.write(
+                f"Difficulty : {difficulty}"
+            )
+
+            st.write(
+                f"Used : {used} times"
+            )
+
+st.divider()
+
+# -------------------------------------------------------
+# AI Summary
+# -------------------------------------------------------
+
+st.subheader("🤖 AI Summary")
+
+if average>=16:
+
+    st.success(
+        "Audience demonstrated excellent understanding of the presented topics."
+    )
+
+elif average>=12:
+
+    st.warning(
+        "Audience understood the concepts reasonably well, but some reinforcement is recommended."
+    )
+
+else:
+
+    st.error(
+        "Audience struggled significantly. Consider revisiting the topic before progressing."
+    )
+
+st.divider()
+
+st.caption(
+    "AudienceIQ Analytics Dashboard"
+)

@@ -1,7 +1,4 @@
 import streamlit as st
-from utils.ui_styles import load_css
-
-load_css()
 
 from database.db import (
     create_tables,
@@ -23,35 +20,33 @@ from ai.ollama_evaluator import (
 create_tables()
 
 st.set_page_config(
-    page_title="Join Session",
+    page_title="Audience Portal",
+    page_icon="🎯",
     layout="wide"
 )
 
-st.title("Join Session")
+st.title("🎯 Audience Portal")
 
-
-st.divider()
+st.markdown(
+"""
+Join a live session, answer AI-generated questions and receive instant evaluation.
+"""
+)
 
 # -----------------------------
-# JOIN SESSION
+# User Details
 # -----------------------------
 
-col1, col2 = st.columns(2)
+user_name = st.text_input(
+    "👤 Participant Name"
+)
 
-with col1:
-
-    user_name = st.text_input(
-        "Enter Your Name"
-    )
-
-with col2:
-
-    session_id = st.text_input(
-        " Session ID"
-    )
+session_id = st.text_input(
+    "🔑 Session ID"
+)
 
 if st.button(
-    " Join Session",
+    "Join Session",
     use_container_width=True
 ):
 
@@ -66,35 +61,40 @@ if st.button(
     if not session_id.isdigit():
 
         st.error(
-            "Please enter a valid Session ID."
+            "Invalid Session ID."
         )
 
         st.stop()
-
-    session_id = int(
-        session_id
-    )
 
     conn = get_connection()
 
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        SELECT
-            question_id,
-            question
-        FROM questions
-        WHERE session_id = ?
-        """,
-        (session_id,)
+    cursor.execute("""
+
+    SELECT
+
+        question_id,
+
+        question
+
+    FROM questions
+
+    WHERE session_id=?
+
+    ORDER BY question_id
+
+    """,
+
+    (int(session_id),)
+
     )
 
     questions = cursor.fetchall()
 
     conn.close()
 
-    if len(questions) == 0:
+    if len(questions)==0:
 
         st.error(
             "Session not found."
@@ -103,152 +103,179 @@ if st.button(
     else:
 
         st.session_state.questions = questions
-        st.session_state.session_id = session_id
+        st.session_state.session_id = int(session_id)
         st.session_state.user_name = user_name
 
         st.success(
             "Successfully joined session."
         )
 
-# -----------------------------
-# DISPLAY QUESTIONS
-# -----------------------------
+# -------------------------------------------------------
+# Questions
+# -------------------------------------------------------
 
 if "questions" in st.session_state:
 
     st.divider()
 
-    total_questions = len(
-        st.session_state.questions
-    )
-
-    st.subheader(
-        " Questions:"
-    )
-
-    st.info(
-        f"Total Questions: {total_questions}"
-    )
+    st.subheader("📝 Answer the Questions")
 
     answers = {}
 
-    question_map = {}
+    total = len(
+        st.session_state.questions
+    )
 
-    for index, (
-            qid,
-            question
-    ) in enumerate(
+    question_lookup = {}
+
+    for i,(qid,question) in enumerate(
+
         st.session_state.questions,
+
         start=1
+
     ):
 
-        question_map[qid] = question
+        question_lookup[qid]=question
 
         st.progress(
-            index / total_questions
+            i/total
         )
 
-        with st.container(
-            border=True
-        ):
+        with st.container(border=True):
 
             st.markdown(
-                f"### Question {index} of {total_questions}"
+                f"### Question {i}"
             )
 
-            st.write(
-                question
-            )
+            st.write(question)
 
-            answers[qid] = st.text_area(
+            answers[qid]=st.text_area(
+
                 "Your Answer",
+
                 key=f"answer_{qid}",
+
                 height=120
+
             )
 
     st.divider()
 
-    # -----------------------------
-    # SUBMIT
-    # -----------------------------
-
     if st.button(
-        "Submit Assessment",
+
+        "✅ Submit Answers",
+
         use_container_width=True
+
     ):
 
-        total_score = 0
+        total_score=0
 
         st.subheader(
-            "Evaluation Results"
+            "📊 Evaluation Results"
         )
 
-        for qid, answer in answers.items():
+        for qid,student_answer in answers.items():
 
-            correct_answer = (
-                get_correct_answer(
-                    qid
-                )
+            expected_answer=get_correct_answer(
+                qid
             )
 
-            score, feedback = (
-                evaluate_answer(
-                    question_map[qid],
-                    correct_answer,
-                    answer
-                )
+            score,feedback=evaluate_answer(
+
+                question_lookup[qid],
+
+                expected_answer,
+
+                student_answer
+
             )
 
-            total_score += score
+            total_score+=score
 
             save_response(
+
                 st.session_state.session_id,
+
                 qid,
+
                 st.session_state.user_name,
-                answer,
+
+                student_answer,
+
                 score
+
             )
 
-            with st.container(
-                border=True
-            ):
+            with st.container(border=True):
+
+                st.write(
+                    f"### Question {qid}"
+                )
 
                 st.metric(
-                    "Question Score",
+
+                    "Score",
+
                     f"{score}/20"
+
                 )
 
                 st.write(
-                    f" Feedback: {feedback}"
+
+                    "**Feedback**"
+
+                )
+
+                st.info(
+                    feedback
                 )
 
         st.divider()
 
+        percentage=(total_score/100)*100
+
         st.metric(
+
             "Final Score",
+
             f"{total_score}/100"
+
         )
 
-        if total_score >= 80:
+        st.progress(
+            percentage/100
+        )
+
+        if percentage>=90:
 
             st.success(
-                "Excellent understanding of the topic."
+                "🏆 Outstanding Performance!"
             )
 
-        elif total_score >= 60:
+        elif percentage>=75:
+
+            st.success(
+                "🎉 Excellent Work!"
+            )
+
+        elif percentage>=60:
+
+            st.info(
+                "👍 Good Job!"
+            )
+
+        elif percentage>=40:
 
             st.warning(
-                "Good understanding. Some concepts need reinforcement."
+                "📘 You understand the basics. More practice is recommended."
             )
 
         else:
 
             st.error(
-                "Learning gaps detected. Additional revision is recommended."
+                "📚 Consider revising the topic and trying again."
             )
 
         st.balloons()
-
-        st.success(
-            "Assessment submitted successfully."
-        )

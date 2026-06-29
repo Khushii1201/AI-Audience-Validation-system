@@ -1,118 +1,204 @@
 import streamlit as st
 
+from utils.ui_styles import load_css
+
+load_css()
+
 st.set_page_config(
-    page_title="InsightLens: An AI-Audience Validation System",
+    page_title="AudienceIQ",
+    page_icon="🧠",
     layout="wide"
 )
 
-# ---------- HERO ----------
+st.title("🧠 AudienceIQ")
 
-st.markdown("""
-<div style="
-background:#1E293B;
-padding:35px;
-border-radius:20px;
-text-align:center;
-">
+st.markdown(
+"""
+### AI-Powered Audience Understanding Platform
 
-<h1 style="
-color:#60A5FA;
-">
-InsightLens-AI
-</h1>
-
-<h3 style="
-color:#D1D5DB;
-">
-Measure Your Audience Understanding in Real Time
-</h3>
-
-<p style="
-color:#CBD5E1;
-font-size:18px;
-">
-Generate AI questions, evaluate audience responses,
-identify learning gaps and gain actionable insights ,All at one platform.
-</p>
-
-</div>
-""",
-unsafe_allow_html=True)
+Create intelligent assessments, evaluate responses using Offline AI,
+track learning outcomes and generate actionable teaching insights.
+"""
+)
 
 st.divider()
 
-# ---------- FEATURES ----------
-
-st.subheader("Our Platform Features:--")
-
-c1, c2, c3 = st.columns(3)
+c1,c2,c3,c4 = st.columns(4)
 
 with c1:
 
-    with st.container(border=True):
+    st.success(
+        """
+### 🤖
 
-        st.markdown("""
-        ### Create Session
+Offline AI
 
-        ->Generate AI-powered questions
-                    
-        ->Review and approve questions
-                    
-        ->Publish learning sessions
-        """)
+Powered by Ollama
+"""
+    )
 
 with c2:
 
-    with st.container(border=True):
+    st.info(
+        """
+### 📚
 
-        st.markdown("""
-        ### Audience Participation
+Question Bank
 
-        ->Join sessions
-                    
-        ->Submit responses
-                    
-        ->Receive instant evaluation
-        """)
+Reusable AI Question Sets
+"""
+    )
 
 with c3:
 
-    with st.container(border=True):
+    st.warning(
+        """
+### 📊
 
-        st.markdown("""
-        ### Analytics & Insights
+Analytics
 
-        ->Learning analytics
-                    
-        ->Weak area detection
-                    
-        ->Audience understanding metrics
-        """)
+Real-time Learning Insights
+"""
+    )
+
+with c4:
+
+    st.error(
+        """
+### 🏆
+
+Leaderboard
+
+Track Top Performers
+"""
+    )
 
 st.divider()
 
-# ---------- MODULES ----------
+st.header("🚀 Features")
 
-st.subheader("Available Modules")
+c1,c2 = st.columns(2)
 
-col1, col2, col3 = st.columns(3)
+with c1:
+
+    st.markdown("""
+### 👨‍🏫 Speaker
+
+- Create AI Sessions
+- Select Difficulty
+- Reuse Question Bank
+- Generate Questions
+- Publish Session
+- AI Teaching Insights
+""")
+
+with c2:
+
+    st.markdown("""
+### 👨‍🎓 Audience
+
+- Join Session
+- Submit Answers
+- AI Evaluation
+- Instant Feedback
+- Leaderboard
+- Performance Tracking
+""")
+
+st.divider()
+
+st.header("🧠 Workflow")
+
+st.markdown("""
+
+1️⃣ Create Session
+
+⬇
+
+2️⃣ Generate AI Questions
+
+⬇
+
+3️⃣ Audience Joins
+
+⬇
+
+4️⃣ AI Evaluates Answers
+
+⬇
+
+5️⃣ Analytics Dashboard
+
+⬇
+
+6️⃣ Learning Insights
+
+⬇
+
+7️⃣ AI Teaching Recommendations
+
+""")
+
+st.divider()
+
+st.header("📌 Navigation")
+
+col1,col2,col3 = st.columns(3)
 
 with col1:
 
-    st.success(" Create Session")
+    st.page_link(
+        "Pages/1_Create_Session.py",
+        label="📝 Create Session"
+    )
 
-    st.success(" Join Session")
+    st.page_link(
+        "Pages/2_Audience.py",
+        label="🎯 Join Session"
+    )
 
 with col2:
 
-    st.success("Analytics")
+    st.page_link(
+        "Pages/3_Analytics.py",
+        label="📊 Analytics"
+    )
 
-    st.success(" Learning Insights")
+    st.page_link(
+        "Pages/4_Learning_Insights.py",
+        label="🧠 Learning Insights"
+    )
 
 with col3:
 
-    st.success("Leaderboard")
+    st.page_link(
+        "Pages/5_Leaderboard.py",
+        label="🏆 Leaderboard"
+    )
 
-    st.success(" My Sessions")
+    st.page_link(
+        "Pages/7_Question_Bank.py",
+        label="📚 Question Bank"
+    )
 
 st.divider()
+
+st.info(
+"""
+### 🎯 Current AI Model
+
+✅ Offline
+
+Model: **Qwen2.5:3B**
+
+Evaluation: Ollama
+
+Question Generation: Ollama
+"""
+)
+
+st.divider()
+
+st.caption(
+"AudienceIQ v2.0 • Offline AI Audience Validation Platform"
+)

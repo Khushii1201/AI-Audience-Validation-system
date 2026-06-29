@@ -1,71 +1,116 @@
+import json
 import ollama
-import re
 
+
+# ----------------------------------------------------
+# Evaluate Student Answer
+# ----------------------------------------------------
 
 def evaluate_answer(
-        question,
-        expected_answer,
-        student_answer
+    question,
+    expected_answer,
+    student_answer
 ):
 
     try:
 
         prompt = f"""
-        Question:
-        {question}
+You are an expert university examiner.
 
-        Expected Answer:
-        {expected_answer}
+Evaluate the student's answer.
 
-        Student Answer:
-        {student_answer}
+Question:
+{question}
 
-        Score answer from 0-20.
+Expected Answer:
+{expected_answer}
 
-        Return EXACTLY:
+Student Answer:
+{student_answer}
 
-        Score: X
+Evaluation Criteria:
 
-        Feedback: Y
-        """
+1. Conceptual correctness
+2. Technical accuracy
+3. Completeness
+4. Clarity
+5. Relevance
+
+Give a score from 0 to 20.
+
+Return ONLY valid JSON.
+
+Example:
+
+{{
+    "score": 18,
+    "feedback": "Good understanding of the concept.",
+    "strength": "Explained the main idea correctly.",
+    "improvement": "Add one real-world example."
+}}
+
+Do NOT return markdown.
+Do NOT return explanation.
+Return ONLY JSON.
+"""
 
         response = ollama.chat(
-            model="llama3.1:8b",
+
+            model="qwen2.5:3b",
+
             messages=[
+
                 {
-                    "role":"user",
-                    "content":prompt
+
+                    "role": "user",
+
+                    "content": prompt
+
                 }
+
             ]
+
         )
 
-        text = (
-            response["message"]["content"]
+        text = response["message"]["content"].strip()
+
+        print("\n========== RAW AI RESPONSE ==========")
+        print(text)
+        print("=====================================\n")
+
+        # Remove markdown if model adds it
+        text = text.replace("```json", "")
+        text = text.replace("```", "")
+        text = text.strip()
+
+        result = json.loads(text)
+
+        score = int(result.get("score", 0))
+
+        score = max(
+            0,
+            min(score, 20)
         )
 
-        score_match = re.search(
-            r"Score:\s*(\d+)",
-            text
+        feedback = result.get(
+            "feedback",
+            "No feedback provided."
         )
 
-        score = 10
+        strength = result.get(
+            "strength",
+            "Not available."
+        )
 
-        if score_match:
-
-            score = int(
-                score_match.group(1)
-            )
-
-        feedback_match = re.search(
-            r"Feedback:\s*(.*)",
-            text,
-            re.DOTALL
+        improvement = result.get(
+            "improvement",
+            "No suggestions."
         )
 
         feedback = (
-            feedback_match.group(1)
-            if feedback_match
-            else "Evaluation completed."
+            f"✅ Strength: {strength}\n\n"
+            f"💬 Feedback: {feedback}\n\n"
+            f"📌 Improvement: {improvement}"
         )
 
         return (
@@ -75,9 +120,10 @@ def evaluate_answer(
 
     except Exception as e:
 
+        print("Evaluation Error:")
         print(e)
 
         return (
             0,
-            "Evaluation failed."
+            "AI evaluation failed. Please try again."
         )

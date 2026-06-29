@@ -1,58 +1,214 @@
 import streamlit as st
 
+
 def load_css():
 
     st.markdown("""
-    <style>
 
-    .main {
-        background-color: #0E1117;
-    }
+<style>
 
-    .stButton > button {
+/* ---------------- Background ---------------- */
 
-        background-color: #2563EB;
+.stApp{
 
-        color: white;
+    background:#0f172a;
 
-        border-radius: 12px;
+    color:white;
 
-        border: none;
+}
 
-        font-weight: 600;
+/* ---------------- Sidebar ---------------- */
 
-        height: 3em;
+section[data-testid="stSidebar"]{
 
-        width: 100%;
-    }
+    background:#111827;
 
-    .stButton > button:hover {
+    border-right:1px solid #374151;
 
-        background-color: #3B82F6;
+}
 
-        color: white;
-    }
+/* ---------------- Titles ---------------- */
 
-    [data-testid="stMetric"] {
+h1{
 
-        background-color: #1E293B;
+    color:white;
 
-        border-radius: 16px;
+    font-weight:700;
 
-        padding: 15px;
+}
 
-        border: 1px solid #334155;
-    }
+h2{
 
-    .stTextInput input {
+    color:white;
 
-        border-radius: 10px;
-    }
+}
 
-    .stTextArea textarea {
+h3{
 
-        border-radius: 10px;
-    }
+    color:#d1d5db;
 
-    </style>
-    """, unsafe_allow_html=True)
+}
+
+/* ---------------- Buttons ---------------- */
+
+.stButton>button{
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:0.7rem;
+
+    font-weight:600;
+
+    transition:0.3s;
+
+}
+
+.stButton>button:hover{
+
+    background:#1d4ed8;
+
+    transform:translateY(-2px);
+
+}
+
+/* ---------------- Text Inputs ---------------- */
+
+.stTextInput input{
+
+    border-radius:10px;
+
+    border:1px solid #374151;
+
+    background:#1f2937;
+
+    color:white;
+
+}
+
+/* ---------------- Text Areas ---------------- */
+
+.stTextArea textarea{
+
+    border-radius:10px;
+
+    background:#1f2937;
+
+    color:white;
+
+}
+
+/* ---------------- Selectbox ---------------- */
+
+.stSelectbox{
+
+    border-radius:10px;
+
+}
+
+/* ---------------- Radio ---------------- */
+
+.stRadio{
+
+    padding:10px;
+
+}
+
+/* ---------------- Metric Cards ---------------- */
+
+[data-testid="metric-container"]{
+
+    background:#1f2937;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    border:1px solid #374151;
+
+}
+
+/* ---------------- Containers ---------------- */
+
+div[data-testid="stVerticalBlock"]>div:has(div.stContainer){
+
+    border-radius:15px;
+
+}
+
+/* ---------------- Progress ---------------- */
+
+.stProgress>div>div{
+
+    background:#3b82f6;
+
+}
+
+/* ---------------- Success ---------------- */
+
+.stSuccess{
+
+    border-radius:10px;
+
+}
+
+/* ---------------- Warning ---------------- */
+
+.stWarning{
+
+    border-radius:10px;
+
+}
+
+/* ---------------- Error ---------------- */
+
+.stError{
+
+    border-radius:10px;
+
+}
+
+/* ---------------- Expander ---------------- */
+
+.streamlit-expanderHeader{
+
+    font-weight:600;
+
+}
+
+/* ---------------- Code Block ---------------- */
+
+code{
+
+    color:#38bdf8;
+
+}
+
+/* ---------------- Footer ---------------- */
+
+footer{
+
+    visibility:hidden;
+
+}
+
+#MainMenu{
+
+    visibility:hidden;
+
+}
+
+header{
+
+    visibility:hidden;
+
+}
+
+</style>
+
+""", unsafe_allow_html=True)

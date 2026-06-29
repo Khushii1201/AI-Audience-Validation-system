@@ -1,80 +1,175 @@
 import streamlit as st
-from utils.ui_styles import load_css
 
-load_css()
+from utils.ui_styles import load_css
 
 from database.analytics_repo import (
     get_leaderboard
 )
 
+load_css()
+
 st.set_page_config(
     page_title="Leaderboard",
+    page_icon="🏆",
     layout="wide"
 )
 
-st.title("Top Participants")
+st.title("🏆 Leaderboard")
 
 st.markdown("""
 Recognizing the best performing participants based on their cumulative scores.
 """)
 
-results = get_leaderboard()
+leaderboard = get_leaderboard()
 
-if len(results) == 0:
+if len(leaderboard) == 0:
 
     st.info(
-        "No participant data available."
+        "No participants available."
     )
 
-else:
+    st.stop()
+for rank, (user, score) in enumerate(
 
-    rank = 1
+    leaderboard,
 
-    for user, score in results:
+    start=1
 
-        if rank == 1:
+):
 
-            medal = "🥇"
+    if rank == 1:
 
-        elif rank == 2:
+        medal = "🥇"
 
-            medal = "🥈"
+        title = "Gold"
 
-        elif rank == 3:
+    elif rank == 2:
 
-            medal = "🥉"
+        medal = "🥈"
+
+        title = "Silver"
+
+    elif rank == 3:
+
+        medal = "🥉"
+
+        title = "Bronze"
+
+    else:
+
+        medal = "🏅"
+
+        title = "Participant"
+
+    with st.container(border=True):
+
+        left, right = st.columns([4,1])
+
+        with left:
+
+            st.subheader(
+                f"{medal} Rank {rank}"
+            )
+
+            st.write(
+                f"Participant : **{user}**"
+            )
+
+            st.write(
+                f"Badge : **{title}**"
+            )
+
+        with right:
+
+            st.metric(
+
+                "Score",
+
+                score
+
+            )
+
+        progress = min(score/100,1)
+
+        st.progress(progress)
+        if score >= 90:
+
+            st.success(
+                "Outstanding Performance ⭐⭐⭐⭐⭐"
+            )
+
+        elif score >= 75:
+
+            st.success(
+                "Excellent Performance ⭐⭐⭐⭐"
+            )
+
+        elif score >= 60:
+
+            st.info(
+                "Good Performance ⭐⭐⭐"
+            )
+
+        elif score >= 40:
+
+            st.warning(
+                "Average Performance ⭐⭐"
+            )
 
         else:
 
-            medal = "🎯"
-
-        with st.container(border=True):
-
-            col1, col2 = st.columns(
-                [4, 1]
+            st.error(
+                "Needs Improvement ⭐"
             )
-
-            with col1:
-
-                st.subheader(
-                    f"{medal} Rank {rank}"
-                )
-
-                st.write(
-                    f"Participant: {user}"
-                )
-
-            with col2:
-
-                st.metric(
-                    "Score",
-                    score
-                )
-
-        rank += 1
 
 st.divider()
 
-st.success(
+st.subheader("🏅 Achievement Levels")
+
+c1, c2, c3, c4 = st.columns(4)
+
+with c1:
+
+    st.success(
+        """
+### 🥇 Gold
+
+90+
+"""
+    )
+
+with c2:
+
+    st.info(
+        """
+### 🥈 Silver
+
+75+
+"""
+    )
+
+with c3:
+
+    st.warning(
+        """
+### 🥉 Bronze
+
+60+
+"""
+    )
+
+with c4:
+
+    st.error(
+        """
+### ⭐ Beginner
+
+Below 60
+"""
+    )
+
+st.divider()
+
+st.caption(
     "Leaderboard updates automatically when new responses are submitted."
 )
