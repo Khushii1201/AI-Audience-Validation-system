@@ -19,14 +19,11 @@ load_css()
 st.set_page_config(
 
     page_title="Question Bank",
-
-    page_icon="📚",
-
     layout="wide"
 
 )
 
-st.title("📚 Question Bank")
+st.title("Question Bank")
 
 st.markdown(
 """
@@ -36,7 +33,7 @@ Reuse them instantly.
 )
 
 search = st.text_input(
-    "🔍 Search Topic"
+    " Search Topic"
 )
 
 difficulty = st.selectbox(

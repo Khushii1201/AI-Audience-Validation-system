@@ -10,11 +10,10 @@ load_css()
 
 st.set_page_config(
     page_title="Leaderboard",
-    page_icon="🏆",
     layout="wide"
 )
 
-st.title("🏆 Leaderboard")
+st.title(" Leaderboard")
 
 st.markdown("""
 Recognizing the best performing participants based on their cumulative scores.
@@ -124,7 +123,7 @@ for rank, (user, score) in enumerate(
 
 st.divider()
 
-st.subheader("🏅 Achievement Levels")
+st.subheader("Achievement Levels")
 
 c1, c2, c3, c4 = st.columns(4)
 

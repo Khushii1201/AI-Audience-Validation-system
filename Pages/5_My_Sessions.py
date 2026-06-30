@@ -11,11 +11,10 @@ load_css()
 
 st.set_page_config(
     page_title="My Sessions",
-    page_icon="📂",
     layout="wide"
 )
 
-st.title("📂 My Sessions")
+st.title(" My Sessions")
 
 st.markdown("""
 View all previously created sessions and monitor their performance.
@@ -118,7 +117,7 @@ for (
         with left:
 
             st.button(
-                "📊 View Analytics",
+                " View Analytics",
                 key=f"analytics_{session_id}",
                 disabled=True,
                 help="Coming Soon"

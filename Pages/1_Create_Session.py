@@ -31,10 +31,7 @@ st.title(" Create AI Session")
 st.markdown("""
 Create AI-powered learning sessions with reusable question banks.
 """)
-
-# ----------------------------------------------------
 # Session State
-# ----------------------------------------------------
 
 if "topic" not in st.session_state:
     st.session_state.topic = ""
@@ -52,10 +49,7 @@ if "bank_results" not in st.session_state:
     st.session_state.bank_results = []
 
 edited_questions = []
-
-# ----------------------------------------------------
 # Topic
-# ----------------------------------------------------
 
 topic = st.text_input(
     "📚 Session Topic",
@@ -64,10 +58,8 @@ topic = st.text_input(
 )
 
 st.session_state.topic = topic
-
-# ----------------------------------------------------
 # Difficulty
-# ----------------------------------------------------
+
 
 difficulty = st.radio(
     " Difficulty",
@@ -80,9 +72,7 @@ difficulty = st.radio(
 
 st.session_state.difficulty = difficulty
 
-# ----------------------------------------------------
-# Question Source
-# ----------------------------------------------------
+# Question source
 
 question_source = st.radio(
     "Question Source",
@@ -98,9 +88,7 @@ st.session_state.question_source = question_source
 
 st.divider()
 
-# ----------------------------------------------------
-# Search Question Bank
-# ----------------------------------------------------
+#Search question bank
 
 st.subheader("🔍 Search Previous Question Sets")
 
@@ -121,9 +109,7 @@ if st.button(
             topic,
             difficulty
         )
-# ----------------------------------------------------
 # Display Previous Question Sets
-# ----------------------------------------------------
 
 if len(st.session_state.bank_results) > 0:
 
@@ -171,8 +157,6 @@ if len(st.session_state.bank_results) > 0:
 
 st.divider()
 
-
-
 st.subheader(" Generate Questions")
 
 col1, col2 = st.columns(2)
@@ -196,8 +180,6 @@ with col1:
                 "Generating questions..."
             ):
 
-                # ---------------- AI ----------------
-
                 if question_source == "AI":
 
                     st.session_state.generated_questions = (
@@ -206,9 +188,6 @@ with col1:
                             difficulty
                         )
                     )
-
-                # ---------------- Question Bank ----------------
-
                 elif question_source == "Question Bank":
 
                     if len(
@@ -224,16 +203,12 @@ with col1:
                         st.info(
                             "Click 'Use' on a question set above."
                         )
-
-                # ---------------- Hybrid ----------------
-
                 elif question_source == "Hybrid":
 
                     ai_questions = generate_questions(
                         topic,
                         difficulty
                     )
-
                     previous_questions = []
 
                     if len(
@@ -286,9 +261,7 @@ with col2:
                     "New question set generated."
                 )
 
-# ----------------------------------------------------
 # Summary
-# ----------------------------------------------------
 
 if len(st.session_state.generated_questions) > 0:
 
@@ -322,9 +295,7 @@ if len(st.session_state.generated_questions) > 0:
     st.success(
         "Question generation completed."
     )
-# ----------------------------------------------------
 # Review Questions
-# ----------------------------------------------------
 
 if len(st.session_state.generated_questions) > 0:
 
@@ -466,11 +437,7 @@ if len(st.session_state.generated_questions) > 0:
                 "Please enter both question and answer."
 
             )
-
-# ----------------------------------------------------
 # Final Question Count
-# ----------------------------------------------------
-
     st.divider()
 
     st.metric(
@@ -488,10 +455,7 @@ if len(st.session_state.generated_questions) > 0:
             "Recommended: Publish exactly 5 questions."
 
         )
-# ----------------------------------------------------
 # Publish Session
-# ----------------------------------------------------
-
 if len(st.session_state.generated_questions) > 0:
 
     st.divider()
@@ -511,10 +475,7 @@ if len(st.session_state.generated_questions) > 0:
             with st.spinner(
                 "Publishing Session..."
             ):
-
-                # ---------------------------------
                 # Create Session
-                # ---------------------------------
 
                 session_id = create_session(
 
@@ -523,10 +484,7 @@ if len(st.session_state.generated_questions) > 0:
                     st.session_state.difficulty
 
                 )
-
-                # ---------------------------------
                 # Save Questions
-                # ---------------------------------
 
                 for q in edited_questions:
 
@@ -539,10 +497,7 @@ if len(st.session_state.generated_questions) > 0:
                         q["answer"]
 
                     )
-
-                # ---------------------------------
                 # Save Question Bank
-                # ---------------------------------
 
                 save_question_bank(
 
@@ -644,11 +599,7 @@ Participants can:
             )
 
             st.rerun()
-
-# ----------------------------------------------------
 # Footer
-# ----------------------------------------------------
-
 st.divider()
 
 st.caption(

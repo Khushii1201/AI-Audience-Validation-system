@@ -4,11 +4,10 @@ from database.db import get_connection
 
 st.set_page_config(
     page_title="Learning Insights",
-    page_icon="🧠",
     layout="wide"
 )
 
-st.title("🧠 Learning Insights")
+st.title("Learning Insights")
 
 st.markdown(
 """

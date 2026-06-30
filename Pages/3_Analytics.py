@@ -18,14 +18,11 @@ from database.analytics_repo import (
 st.set_page_config(
 
     page_title="Analytics Dashboard",
-
-    page_icon="📊",
-
     layout="wide"
 
 )
 
-st.title("📊 Analytics Dashboard")
+st.title("Analytics Dashboard")
 
 st.markdown(
 """
@@ -90,7 +87,7 @@ st.divider()
 # Leaderboard
 # -------------------------------------------------------
 
-st.subheader("🏆 Top Participants")
+st.subheader("Top Participants")
 
 leaderboard = get_leaderboard()
 
@@ -127,7 +124,7 @@ st.divider()
 # Performance Distribution
 # -------------------------------------------------------
 
-st.subheader("📈 Performance Distribution")
+st.subheader(" Performance Distribution")
 
 distribution = get_performance_distribution()
 
@@ -167,7 +164,7 @@ st.divider()
 # Topic Analytics
 # -------------------------------------------------------
 
-st.subheader("📚 Topic Analytics")
+st.subheader(" Topic Analytics")
 
 topics = get_topic_statistics()
 
@@ -209,7 +206,7 @@ st.divider()
 # Difficulty Analytics
 # -------------------------------------------------------
 
-st.subheader("🎯 Difficulty Analytics")
+st.subheader("Difficulty Analytics")
 
 difficulty = get_difficulty_statistics()
 
@@ -245,7 +242,7 @@ st.divider()
 # Question Bank Usage
 # -------------------------------------------------------
 
-st.subheader("📚 Most Reused Question Sets")
+st.subheader(" Most Reused Question Sets")
 
 usage = get_question_bank_usage()
 
@@ -279,7 +276,7 @@ st.divider()
 # AI Summary
 # -------------------------------------------------------
 
-st.subheader("🤖 AI Summary")
+st.subheader("AI Summary")
 
 if average>=16:
 

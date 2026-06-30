@@ -21,28 +21,25 @@ create_tables()
 
 st.set_page_config(
     page_title="Audience Portal",
-    page_icon="🎯",
     layout="wide"
 )
 
-st.title("🎯 Audience Portal")
+st.title("Audience Portal")
 
 st.markdown(
 """
-Join a live session, answer AI-generated questions and receive instant evaluation.
+Join the session using your name and the session ID provided by the host.
 """
 )
 
-# -----------------------------
 # User Details
-# -----------------------------
 
 user_name = st.text_input(
-    "👤 Participant Name"
+    " Participant Name"
 )
 
 session_id = st.text_input(
-    "🔑 Session ID"
+    " Session ID"
 )
 
 if st.button(
@@ -118,7 +115,7 @@ if "questions" in st.session_state:
 
     st.divider()
 
-    st.subheader("📝 Answer the Questions")
+    st.subheader(" Answer the Questions")
 
     answers = {}
 
@@ -164,7 +161,7 @@ if "questions" in st.session_state:
 
     if st.button(
 
-        "✅ Submit Answers",
+        " Submit Answers",
 
         use_container_width=True
 
@@ -173,7 +170,7 @@ if "questions" in st.session_state:
         total_score=0
 
         st.subheader(
-            "📊 Evaluation Results"
+            " Evaluation Results"
         )
 
         for qid,student_answer in answers.items():
@@ -253,31 +250,31 @@ st.progress(
 if percentage>=90:
 
             st.success(
-                "🏆 Outstanding Performance!"
+                " Outstanding Performance!"
             )
 
         elif percentage>=75:
 
             st.success(
-                "🎉 Excellent Work!"
+                " Excellent Work!"
             )
 
         elif percentage>=60:
 
             st.info(
-                "👍 Good Job!"
+                " Good Job!"
             )
 
         elif percentage>=40:
 
             st.warning(
-                "📘 You understand the basics. More practice is recommended."
+                " You understand the basics. More practice is recommended."
             )
 
         else:
 
             st.error(
-                "📚 Consider revising the topic and trying again."
+                " Consider revising the topic and trying again."
             )
 
         st.balloons()
