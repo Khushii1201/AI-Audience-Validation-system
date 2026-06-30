@@ -247,34 +247,34 @@ st.progress(
             percentage/100
         )
 
-if percentage>=90:
+if percentage >= 90:
 
-            st.success(
-                " Outstanding Performance!"
-            )
+    st.success(
+        " Outstanding Performance!"
+    )
 
-        elif percentage>=75:
+elif percentage >= 75:
 
-            st.success(
-                " Excellent Work!"
-            )
+    st.success(
+        " Excellent Work!"
+    )
 
-        elif percentage>=60:
+elif percentage >= 60:
 
-            st.info(
-                " Good Job!"
-            )
+    st.info(
+        " Good Job!"
+    )
 
-        elif percentage>=40:
+elif percentage >= 40:
 
-            st.warning(
-                " You understand the basics. More practice is recommended."
-            )
+    st.warning(
+        " You understand the basics. More practice is recommended."
+    )
 
-        else:
+else:
 
-            st.error(
-                " Consider revising the topic and trying again."
-            )
+    st.error(
+        " Consider revising the topic and trying again."
+    )
 
-        st.balloons()
+st.balloons()
