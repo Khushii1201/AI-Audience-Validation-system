@@ -20,26 +20,26 @@ from ai.ollama_evaluator import (
 create_tables()
 
 st.set_page_config(
-    page_title="Audience Portal",
+    page_title="Join Session",
     layout="wide"
 )
 
-st.title("Audience Portal")
+st.title("Join Session")
 
-st.markdown(
-"""
-Join the session using your name and the session ID provided by the host.
-"""
+st.write(
+    "Enter your name and the Session ID provided by the speaker."
 )
 
+# -----------------------------------------
 # User Details
+# -----------------------------------------
 
 user_name = st.text_input(
-    " Participant Name"
+    "Participant Name"
 )
 
 session_id = st.text_input(
-    " Session ID"
+    "Session ID"
 )
 
 if st.button(
@@ -67,31 +67,30 @@ if st.button(
 
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
+        SELECT
 
-    SELECT
+            question_id,
 
-        question_id,
+            question
 
-        question
+        FROM questions
 
-    FROM questions
+        WHERE session_id=?
 
-    WHERE session_id=?
-
-    ORDER BY question_id
-
-    """,
-
-    (int(session_id),)
-
+        ORDER BY question_id
+        """,
+        (
+            int(session_id),
+        )
     )
 
     questions = cursor.fetchall()
 
     conn.close()
 
-    if len(questions)==0:
+    if len(questions) == 0:
 
         st.error(
             "Session not found."
@@ -104,28 +103,29 @@ if st.button(
         st.session_state.user_name = user_name
 
         st.success(
-            "Successfully joined session."
+            "Session Joined Successfully."
         )
-
-# -------------------------------------------------------
-# Questions
-# -------------------------------------------------------
+# ----------------------------------------------------
+# Display Questions
+# ----------------------------------------------------
 
 if "questions" in st.session_state:
 
     st.divider()
 
-    st.subheader(" Answer the Questions")
+    st.subheader("Answer the Questions")
 
     answers = {}
 
-    total = len(
+    question_lookup = {}
+
+    total_questions = len(
         st.session_state.questions
     )
 
-    question_lookup = {}
+    progress_bar = st.progress(0)
 
-    for i,(qid,question) in enumerate(
+    for index, (qid, question) in enumerate(
 
         st.session_state.questions,
 
@@ -133,27 +133,29 @@ if "questions" in st.session_state:
 
     ):
 
-        question_lookup[qid]=question
+        question_lookup[qid] = question
 
-        st.progress(
-            i/total
+        progress_bar.progress(
+            index / total_questions
         )
 
         with st.container(border=True):
 
             st.markdown(
-                f"### Question {i}"
+                f"### Question {index}"
             )
 
-            st.write(question)
+            st.write(
+                question
+            )
 
-            answers[qid]=st.text_area(
+            answers[qid] = st.text_area(
 
                 "Your Answer",
 
                 key=f"answer_{qid}",
 
-                height=120
+                height=150
 
             )
 
@@ -161,25 +163,25 @@ if "questions" in st.session_state:
 
     if st.button(
 
-        " Submit Answers",
+        "Submit Answers",
 
         use_container_width=True
 
     ):
 
-        total_score=0
+        total_score = 0
 
         st.subheader(
-            " Evaluation Results"
+            "Evaluation Results"
         )
 
-        for qid,student_answer in answers.items():
+        for qid, student_answer in answers.items():
 
-            expected_answer=get_correct_answer(
+            expected_answer = get_correct_answer(
                 qid
             )
 
-            score,feedback=evaluate_answer(
+            score, feedback = evaluate_answer(
 
                 question_lookup[qid],
 
@@ -189,7 +191,12 @@ if "questions" in st.session_state:
 
             )
 
-            total_score+=score
+            score = max(
+                0,
+                min(score, 20)
+            )
+
+            total_score += score
 
             save_response(
 
@@ -208,73 +215,84 @@ if "questions" in st.session_state:
             with st.container(border=True):
 
                 st.write(
-                    f"### Question {qid}"
+                    f"Question {qid}"
                 )
 
                 st.metric(
-
                     "Score",
-
                     f"{score}/20"
-
                 )
 
                 st.write(
-
-                    "**Feedback**"
-
+                    "Feedback"
                 )
 
                 st.info(
                     feedback
                 )
+        # ----------------------------------------------------
+        # Final Score
+        # ----------------------------------------------------
 
-        st.divider()
-        # Prevent score from exceeding limits
-total_score = max(0, min(total_score, 100))
-
-percentage = total_score
-
-st.metric(
-    "Final Score",
-    f"{total_score}/100"
-)
-
-st.progress(
-    percentage / 100
-)
-st.progress(
-            percentage/100
+        total_score = max(
+            0,
+            min(total_score, 100)
         )
 
-if percentage >= 90:
+        percentage = total_score
 
-    st.success(
-        " Outstanding Performance!"
-    )
+        st.divider()
 
-elif percentage >= 75:
+        st.metric(
+            "Final Score",
+            f"{total_score}/100"
+        )
 
-    st.success(
-        " Excellent Work!"
-    )
+        st.progress(
+            percentage / 100
+        )
 
-elif percentage >= 60:
+        if percentage >= 90:
 
-    st.info(
-        " Good Job!"
-    )
+            st.success(
+                "Outstanding Performance!"
+            )
 
-elif percentage >= 40:
+        elif percentage >= 75:
 
-    st.warning(
-        " You understand the basics. More practice is recommended."
-    )
+            st.success(
+                "Excellent Work!"
+            )
 
-else:
+        elif percentage >= 60:
 
-    st.error(
-        " Consider revising the topic and trying again."
-    )
+            st.info(
+                "Good Job!"
+            )
 
-st.balloons()
+        elif percentage >= 40:
+
+            st.warning(
+                "You understand the basics. More practice is recommended."
+            )
+
+        else:
+
+            st.error(
+                "Consider revising the topic and trying again."
+            )
+
+        st.balloons()
+
+        # ----------------------------------------------------
+        # Clear Session
+        # ----------------------------------------------------
+
+        if "questions" in st.session_state:
+            del st.session_state.questions
+
+        if "session_id" in st.session_state:
+            del st.session_state.session_id
+
+        if "user_name" in st.session_state:
+            del st.session_state.user_name
