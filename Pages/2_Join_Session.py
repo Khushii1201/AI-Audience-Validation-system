@@ -1,5 +1,11 @@
 import streamlit as st
 
+if st.session_state.get("role") != "audience":
+
+    st.error("Unauthorized Access")
+
+    st.stop()
+
 from database.db import (
     create_tables,
     get_connection
