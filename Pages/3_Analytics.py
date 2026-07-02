@@ -1,11 +1,5 @@
 import streamlit as st
 
-if st.session_state.get("role") != "speaker":
-
-    st.error("Unauthorized Access")
-
-    st.stop()
-
 from database.analytics_repo import (
 
     get_total_responses,

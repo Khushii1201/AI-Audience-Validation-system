@@ -1,11 +1,5 @@
 import streamlit as st
 
-if st.session_state.get("role") != "speaker":
-
-    st.error("Unauthorized Access")
-
-    st.stop()
-
 from database.db import get_connection
 
 st.set_page_config(
